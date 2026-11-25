@@ -113,10 +113,6 @@ const WRITE_LOCAL = { readOnlyHint: false, destructiveHint: false, idempotentHin
 const OVERWRITE_LOCAL = { readOnlyHint: false, destructiveHint: true, idempotentHint: false, openWorldHint: false };
 const DELETE_LOCAL = { readOnlyHint: false, destructiveHint: true, idempotentHint: false, openWorldHint: false };
 
-// The Glow tools send the document to a remote service and write the result
-// back. Both halves of that matter to a client deciding whether to ask first.
-const WRITE_NETWORK = { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: true };
-const OVERWRITE_NETWORK = { readOnlyHint: false, destructiveHint: true, idempotentHint: false, openWorldHint: true };
 
 export const TOOL_METADATA = {
   // ---- pure calculation, no input beyond its arguments ----
@@ -139,12 +135,6 @@ export const TOOL_METADATA = {
   scan_markdown_document: T("Scan a markdown file", READ_LOCAL, FINDINGS_OUTPUT_SCHEMA, 60000),
   extract_document_metadata: T("Extract document metadata", READ_LOCAL, STATUS_OUTPUT_SCHEMA),
   batch_scan_documents: T("Scan many documents", READ_LOCAL, FINDINGS_OUTPUT_SCHEMA, 120000),
-  // These fetch a public link when given one instead of the file, so the world is open.
-  scan_uploaded_document: T("Scan an uploaded document", READ_NETWORK, FINDINGS_OUTPUT_SCHEMA, 60000),
-  extract_document_images: T("Extract a document's pictures", READ_NETWORK, LISTING_OUTPUT_SCHEMA, 200000),
-  // It never changes the person's file: it returns a new one.
-  write_document_alt_text: T("Write alt text into a document", READ_NETWORK, DOCUMENT_OUTPUT_SCHEMA, 60000),
-  get_specialist: T("Get a specialist's instructions", READ_LOCAL, STATUS_OUTPUT_SCHEMA, 60000),
 
   // ---- runtime scanners: they load a page, so the world is open ----
   run_axe_scan: T("Run an axe-core scan", READ_NETWORK, FINDINGS_OUTPUT_SCHEMA, 80000),
@@ -156,11 +146,6 @@ export const TOOL_METADATA = {
   // ---- external tooling ----
   run_verapdf_scan: T("Run veraPDF", READ_LOCAL, FINDINGS_OUTPUT_SCHEMA, 80000),
   check_verapdf_installation: T("Check veraPDF is installed", READ_LOCAL, STATUS_OUTPUT_SCHEMA),
-  glow_health_check: T("Check Glow availability", READ_NETWORK, STATUS_OUTPUT_SCHEMA),
-  glow_audit_document: T("Audit a document with Glow", READ_NETWORK, FINDINGS_OUTPUT_SCHEMA, 60000),
-  // Returns the report inline rather than writing a file, so its result is a
-  // status, not a document.
-  glow_generate_report: T("Generate a Glow report", READ_NETWORK, STATUS_OUTPUT_SCHEMA),
 
   // ---- audit history ----
   list_audit_history: T("List audit history", READ_LOCAL, LISTING_OUTPUT_SCHEMA),
@@ -180,8 +165,6 @@ export const TOOL_METADATA = {
   generate_accessibility_statement: T("Generate an accessibility statement", WRITE_LOCAL, STATUS_OUTPUT_SCHEMA),
   fix_document_metadata: T("Fix document metadata in place", OVERWRITE_LOCAL, STATUS_OUTPUT_SCHEMA),
   fix_document_headings: T("Fix document headings in place", OVERWRITE_LOCAL, STATUS_OUTPUT_SCHEMA),
-  glow_fix_document: T("Fix a document with Glow", OVERWRITE_NETWORK, STATUS_OUTPUT_SCHEMA),
-  glow_convert_document: T("Convert a document with Glow", WRITE_NETWORK, STATUS_OUTPUT_SCHEMA),
 
   // ---- report rendering ----
   render_accessibility_report: T("Render an accessibility report", WRITE_LOCAL, DOCUMENT_OUTPUT_SCHEMA),

@@ -19,8 +19,6 @@
  *   Caching:   check_audit_cache, update_audit_cache
  *   EPUB:     scan_epub_document
  *   Markdown: scan_markdown_document
- *   GLOW:     glow_health_check, glow_audit_document, glow_fix_document,
- *             glow_convert_document, glow_generate_report
  *   Advanced:  run_axe_scan (Playwright), run_playwright_keyboard_scan,
  *              run_playwright_contrast_scan, run_verapdf_scan (veraPDF CLI),
  *              convert_pdf_form_to_html (pdf-lib)
@@ -63,9 +61,6 @@ import { registerReportTools } from "./tools/report-tools.js";
 import { withToolMetadata } from "./tool-metadata.js";
 import { okResult, errorResult, findingsResult, scannerFinding } from "./results.js";
 import { SERVER_VERSION } from "./version.js";
-import { registerGlowTools } from "./tools/glow-tools.js";
-import { registerHostedDocumentTools } from "./tools/hosted-document-tools.js";
-import { registerDocumentImageTools } from "./tools/document-images.js";
 
 /** Maximum file size accepted for document scanning (100 MB). */
 const MAX_FILE_BYTES = 100 * 1024 * 1024;
@@ -1403,7 +1398,6 @@ export function createServer() {
   registerPdfFormTools(server);
   registerEpubTools(server);
   registerMarkdownTools(server);
-  registerGlowTools(server);
   registerAuditHistoryTools(server);
   registerTrendTools(server);
   registerReportTools(server);
@@ -2376,18 +2370,6 @@ export function createServer() {
   );
 
   registerTrendResource(server);
-
-  // Upload scanning and the specialists' instructions. They take the
-  // handlers now, because the hosted filter below removes the path-based
-  // scanners from the list a client sees.
-  const scanHandlers = {};
-  for (const name of ["scan_office_document", "scan_pdf_document", "scan_epub_document",
-    "scan_markdown_document", "check_heading_structure", "check_link_text",
-    "check_form_labels"]) {
-    scanHandlers[name] = server._registeredTools[name].handler;
-  }
-  registerHostedDocumentTools(server, scanHandlers);
-  registerDocumentImageTools(server);
 
   if (process.env.A11Y_MCP_TOOLSET === "hosted") {
     for (const name of Object.keys(server._registeredTools)) {
